@@ -1,6 +1,7 @@
 TARGET = qterminal
 TEMPLATE = app
 
+QT += widgets gui
 LIBS += -lqtermwidget
 DEFINES += STR_VERSION=\\\"1.0\\\"
 
@@ -20,7 +21,10 @@ HEADERS=	src/config.h		\
 		src/termwidget.h	\
                 src/termwidgetholder.h
 
-INCLUDEPATH+=	src
+#HEADERS += src/third-party/qxtglobal.h src/third-party/qxtglobalshortcut.h src/third-party/qxtglobalshortcut_p.h
+#SOURCES += src/third-party/qxtglobalshortcut.cpp src/third-party/qxtglobalshortcut_x11.cpp
+
+INCLUDEPATH +=	src
 
 RESOURCES=	src/icons.qrc
 

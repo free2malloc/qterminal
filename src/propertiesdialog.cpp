@@ -202,7 +202,7 @@ void PropertiesDialog::recordAction(int row, int column)
 void PropertiesDialog::validateAction(int row, int column)
 {
     QTableWidgetItem *item = shortcutsWidget->item(row, column);
-    QString accelText = QString(QKeySequence(item->text()));
+    QString accelText = QKeySequence(item->text()).toString();
 
     if (accelText.isEmpty() && !item->text().isEmpty())
         item->setText(oldAccelText);

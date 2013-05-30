@@ -24,7 +24,7 @@
 #include "ui_qterminal.h"
 
 #include <QMainWindow>
-#include "third-party/qxtglobalshortcut.h"
+//#include "third-party/qxtglobalshortcut.h"
 
 class QToolButton;
 
@@ -64,7 +64,7 @@ private:
     QActionGroup *tabPosition, *scrollBarPosition;
     QMenu *tabPosMenu, *scrollPosMenu;
 
-    QAction *toggleBorder, *toggleTabbar, *renameSession;
+    QAction *toggleBorder, *toggleTabbar;
 
     QString m_initWorkDir;
     QString m_initShell;
@@ -80,7 +80,7 @@ private:
     void enableDropMode();
     QToolButton *m_dropLockButton;
     bool m_dropMode;
-    QxtGlobalShortcut m_dropShortcut;
+    //QxtGlobalShortcut m_dropShortcut;
     void realign();
     void setDropShortcut(QKeySequence dropShortCut);
 };

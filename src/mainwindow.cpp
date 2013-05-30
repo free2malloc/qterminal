@@ -49,7 +49,7 @@ MainWindow::MainWindow(const QString& work_dir,
 
     connect(actAbout, SIGNAL(triggered()), SLOT(actAbout_triggered()));
     connect(actAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(&m_dropShortcut, SIGNAL(activated()), SLOT(showHide()));
+    //connect(&m_dropShortcut, SIGNAL(activated()), SLOT(showHide()));
 
     setContentsMargins(0, 0, 0, 0);
     if (m_dropMode) {
@@ -74,11 +74,15 @@ MainWindow::MainWindow(const QString& work_dir,
     setup_ActionsMenu_Actions();
     setup_ViewMenu_Actions();
 
-    // Add global rename Session shortcut
-    renameSession = new QAction(tr("Rename Session"), this);
-    renameSession->setShortcut(QKeySequence(tr(RENAME_SESSION_SHORTCUT)));
-    connect(renameSession, SIGNAL(triggered()), consoleTabulator, SLOT(renameSession()));
-    addAction(renameSession);
+    if(Properties::Instance()->borderless) {
+        toggleBorder->setChecked(true);
+        toggleBorderless();
+    }
+
+    if(Properties::Instance()->tabBarless) {
+        toggleTabbar->setChecked(true);
+        toggleTabBar();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -127,12 +131,13 @@ void MainWindow::setDropShortcut(QKeySequence dropShortCut)
 {
     if (!m_dropMode)
         return;
-
+/*
     if (m_dropShortcut.shortcut() != dropShortCut)
     {
         m_dropShortcut.setShortcut(dropShortCut);
         qWarning() << tr("Press \"%1\" to see the terminal.").arg(dropShortCut.toString());
     }
+*/
 }
 
 void MainWindow::setup_ActionsMenu_Actions()
@@ -292,7 +297,7 @@ void MainWindow::setup_FileMenu_Actions()
     menu_File->addAction(Properties::Instance()->actions[CLOSE_TAB]);
 
     Properties::Instance()->actions[NEW_WINDOW] = new QAction(tr("New Window"), this);
-    seq = QKeySequence::fromString( settings.value(NEW_WINDOW, NEW_WINDOW_SHORTCUT).toString() );
+    seq = QKeySequence::fromString( settings.value(NEW_WINDOW, QKeySequence(QKeySequence::New).toString()).toString() );
     Properties::Instance()->actions[NEW_WINDOW]->setShortcut(seq);
     connect(Properties::Instance()->actions[NEW_WINDOW], SIGNAL(triggered()), this, SLOT(newTerminalWindow()));
     menu_File->addAction(Properties::Instance()->actions[NEW_WINDOW]);
@@ -314,22 +319,16 @@ void MainWindow::setup_FileMenu_Actions()
 
 void MainWindow::setup_ViewMenu_Actions()
 {
-    toggleBorder = new QAction(tr("Hide Window Borders"), this);
+    toggleBorder = new QAction(tr("Toggle Borderless"), this);
     //toggleBorder->setObjectName("toggle_Borderless");
     toggleBorder->setCheckable(true);
-// TODO/FIXME: it's broken somehow. When I call toggleBorderless() here the non-responsive window appear
-//    toggleBorder->setChecked(Properties::Instance()->borderless);
-//    if (Properties::Instance()->borderless)
-//        toggleBorderless();
     connect(toggleBorder, SIGNAL(triggered()), this, SLOT(toggleBorderless()));
     menu_Window->addAction(toggleBorder);
     toggleBorder->setVisible(!m_dropMode);
 
-    toggleTabbar = new QAction(tr("Show Tab Bar"), this);
+    toggleTabbar = new QAction(tr("Toggle TabBar"), this);
     //toggleTabbar->setObjectName("toggle_TabBar");
     toggleTabbar->setCheckable(true);
-    toggleTabbar->setChecked(!Properties::Instance()->tabBarless);
-    toggleTabBar();
     connect(toggleTabbar, SIGNAL(triggered()), this, SLOT(toggleTabBar()));
     menu_Window->addAction(toggleTabbar);
 
@@ -404,8 +403,12 @@ void MainWindow::on_consoleTabulator_currentChanged(int)
 
 void MainWindow::toggleTabBar()
 {
-    consoleTabulator->tabBar()->setVisible(toggleTabbar->isChecked());
-    Properties::Instance()->tabBarless = !toggleTabbar->isChecked();
+    if(toggleTabbar->isChecked())
+        consoleTabulator->tabBar()->hide();
+    else
+        consoleTabulator->tabBar()->show();
+
+    Properties::Instance()->tabBarless = toggleTabbar->isChecked();
 }
 
 void MainWindow::toggleBorderless()
